@@ -1,0 +1,10 @@
+# Ignorera alla node_modules mappar
+node_modules/
+
+# Ignorera alla .env filer
+.env
+
+# Ignorera eventuella byggfiler
+dist/
+build/
+public/

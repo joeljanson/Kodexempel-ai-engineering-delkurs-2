@@ -1,0 +1,8 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@huggingface/inference": "^3.6.2",
+    "@huggingface/transformers": "^3.4.1",
+    "kokoro-js": "^1.2.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@huggingface/inference": "^3.6.2",
+    "@huggingface/transformers": "^3.4.1",
+    "dotenv": "^16.4.7",
+    "openai": "^4.89.0",
+    "wavefile": "^11.0.0"
+  }
+}

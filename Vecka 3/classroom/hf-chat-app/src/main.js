@@ -32,12 +32,19 @@ let audioChunks = [];
 let isRecording = false;
 let ttsModel = null;
 
-
-
 async function transcribeAudio(audioBlob) {
 	/*
      Här ska ni anropa whisper eller liknande för att transcribera ljudet (audioBlob).
     */
+	const output = await client.automaticSpeechRecognition({
+		data: audioBlob,
+		model: "openai/whisper-large-v3",
+		provider: "hf-inference",
+	});
+
+	console.log(output);
+
+	return output.text;
 }
 
 // Load TTS model
@@ -50,6 +57,10 @@ async function loadTTSModel() {
         Här ska ni ladda text-to-speech modellen (Kokoro-82M-v1.0-ONNX) och spara den i variabeln ttsModel.
         Denna variable anropar vi i ett senare skede för att generera en ljudfil (se funktionen processAudio).
         */
+		const model_id = "onnx-community/Kokoro-82M-ONNX";
+		ttsModel = await KokoroTTS.from_pretrained(model_id, {
+			dtype: "q8", // Options: "fp32", "fp16", "q8", "q4", "q4f16"
+		});
 
 		statusDiv.textContent = "Text to Speech model loaded successfully!";
 		recordButton.style.display = "inline-block";
@@ -80,11 +91,27 @@ async function processAudio(audioBlob) {
 
 			// Här ska ni implementera en chatCompletions modell med valfri modell från huggingface.
 			// Denna modell ska användas för att generera en respons till användaren baserat på det ljud som har transcriberats.
+			const chatCompletion = await client.chatCompletion({
+				provider: "hf-inference",
+				model: "mistralai/Mistral-7B-Instruct-v0.3",
+				messages: [
+					{
+						role: "user",
+						content: transcription,
+					},
+				],
+				max_tokens: 500,
+			});
+
+			const response = chatCompletion.choices[0].message.content;
 
 			statusDiv.textContent = "Generating speech for text: " + response;
 
 			// Generera ljudet (audioBlob) med hjälp av ttsModel.
-			//const audio = ???
+			const audio = await ttsModel.generate(response, {
+				// Use `tts.list_voices()` to list all available voices
+				voice: "af_bella",
+			});
 
 			statusDiv.textContent = "Audio generated, playing...";
 
@@ -107,7 +134,6 @@ async function processAudio(audioBlob) {
 		recordButton.disabled = false;
 	}
 }
-
 
 /*
 

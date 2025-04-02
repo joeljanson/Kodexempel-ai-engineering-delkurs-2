@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@huggingface/transformers": "^3.4.2"
+  }
+}

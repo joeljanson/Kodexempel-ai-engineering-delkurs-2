@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMAP Image-Text Visualization</title>
+    <!-- Load UMAP.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/umap-js@1.4.0/lib/umap-js.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+        }
+        canvas {
+            display: block;
+        }
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            z-index: 1000;
+        }
+        .text-label {
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading data...</div>
+    <canvas id="visualization"></canvas>
+    
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the visualization
+            initVisualization();
+        });
+
+        async function initVisualization() {
+            // Get the canvas element and its context
+            const canvas = document.getElementById('visualization');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to window size
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                // Redraw if we have data
+                if (umapResults) {
+                    drawPoints();
+                }
+            });
+            
+            // Load both embeddings data
+            const [imageResponse, textResponse] = await Promise.all([
+                fetch('image-embeddings.json'),
+                fetch('text-embeddings.json')
+            ]);
+            
+            const imageData = await imageResponse.json();
+            const textData = await textResponse.json();
+            
+            // Extract embeddings and metadata from both datasets
+            const rawEmbeddings = [];
+            const imagePaths = [];
+            const textLabels = [];
+            const isImage = []; // Array to track which points are images vs text
+            
+            // Add image embeddings
+            for (let i = 0; i < imageData.embeddings.length; i++) {
+                rawEmbeddings.push(imageData.embeddings[i].embedding);
+                imagePaths.push(imageData.embeddings[i].path);
+                isImage.push(true);
+            }
+            
+            // Add text embeddings
+            for (let i = 0; i < textData.embeddings.length; i++) {
+                rawEmbeddings.push(textData.embeddings[i].embedding);
+                textLabels.push(textData.embeddings[i].path);
+                isImage.push(false);
+            }
+            
+            console.log("Total embeddings loaded:", rawEmbeddings.length);
+            console.log("Images:", imagePaths.length);
+            console.log("Texts:", textLabels.length);
+            console.log("Texts:", textLabels);
+            
+            // Normalize embeddings to ensure they're in the same scale
+            const normalizedEmbeddings = normalizeEmbeddings(rawEmbeddings);
+            
+            // Load all images
+            const images = await Promise.all(imagePaths.map(path => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = path;
+                });
+            }));
+            
+            // Remove loading message
+            document.getElementById('loading').style.display = 'none';
+            
+            // UMAP configuration options
+            const nEpochs = 1000;  // Increased epochs for better optimization
+            const options = {
+                nNeighbors: 5,    // Increased to consider more neighbors
+                minDist: 0.05,     // Decreased to allow points to be closer
+                nComponents: 2,
+                nEpochs: nEpochs,
+            };
+            
+            // Initialize UMAP with options and data
+            const umap = new UMAP.UMAP(options);
+            umap.initializeFit(normalizedEmbeddings);
+            
+            let iterations = 0;
+            let umapResults = null;
+            
+            // Animation loop function
+            function animate() {
+                // Clear the canvas
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Run UMAP iterations
+                if (iterations < nEpochs) {
+                    iterations = umap.step();
+                    // Get the current UMAP results
+                    umapResults = umap.getEmbedding();
+                    // Draw the points
+                    drawPoints();
+                    // Continue animation
+                    requestAnimationFrame(animate);
+                } else if (iterations === nEpochs) {
+                    // Final draw when iterations are complete
+                    umapResults = umap.getEmbedding();
+                    drawPoints();
+                    console.log("UMAP processing complete");
+                }
+            }
+            
+            // Function to draw the points on the canvas
+            function drawPoints() {
+                // Variables to store the min and max values for mapping
+                let minX = Infinity;
+                let maxX = -Infinity;
+                let minY = Infinity;
+                let maxY = -Infinity;
+                
+                // Calculate the min and max values for x and y
+                for (let i = 0; i < umapResults.length; i++) {
+                    let dataPoint = umapResults[i];
+                    minX = Math.min(dataPoint[0], minX);
+                    minY = Math.min(dataPoint[1], minY);
+                    maxX = Math.max(dataPoint[0], maxX);
+                    maxY = Math.max(dataPoint[1], maxY);
+                }
+                
+                // Draw the UMAP results on the canvas
+                for (let i = 0; i < umapResults.length; i++) {
+                    let dataPoint = umapResults[i];
+                    // Map the UMAP output to canvas coordinates
+                    let x = map(dataPoint[0], minX, maxX, 50, canvas.width - 50);
+                    let y = map(dataPoint[1], minY, maxY, 50, canvas.height - 50);
+                    
+                    if (isImage[i]) {
+                        // Draw image
+                        const imgIndex = imagePaths.indexOf(imagePaths[isImage.slice(0, i).filter(Boolean).length]);
+                        const img = images[imgIndex];
+                        
+                        // Calculate image size (maintain aspect ratio)
+                        const maxSize = 100; // Maximum size for images
+                        const aspectRatio = img.width / img.height;
+                        let width = maxSize;
+                        let height = maxSize;
+                        
+                        if (aspectRatio > 1) {
+                            height = maxSize / aspectRatio;
+                        } else {
+                            width = maxSize * aspectRatio;
+                        }
+                        
+                        // Draw the image centered at the mapped coordinates
+                        ctx.drawImage(img, x - width/2, y - height/2, width, height);
+                    } else {
+                        // Draw text
+                        const textIndex = i - imagePaths.length;  // Calculate text index directly
+                        const text = textLabels[textIndex];
+                        
+                        // Set text style
+                        ctx.fillStyle = 'white';
+                        ctx.font = '14px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        // Draw text with shadow for better visibility
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                        ctx.shadowBlur = 4;
+                        ctx.shadowOffsetX = 1;
+                        ctx.shadowOffsetY = 1;
+                        
+                        ctx.fillText(text, x, y);
+                        
+                        // Reset shadow
+                        ctx.shadowColor = 'transparent';
+                        ctx.shadowBlur = 0;
+                        ctx.shadowOffsetX = 0;
+                        ctx.shadowOffsetY = 0;
+                    }
+                }
+            }
+            
+            // Helper function to map values (similar to p5.js map function)
+            function map(value, inMin, inMax, outMin, outMax) {
+                return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+            }
+            
+            // Add this new function before the map function
+            function normalizeEmbeddings(embeddings) {
+                // Calculate mean and standard deviation for each dimension
+                const dims = embeddings[0].length;
+                const means = new Array(dims).fill(0);
+                const stds = new Array(dims).fill(0);
+                
+                // Calculate means
+                for (let i = 0; i < embeddings.length; i++) {
+                    for (let j = 0; j < dims; j++) {
+                        means[j] += embeddings[i][j];
+                    }
+                }
+                for (let j = 0; j < dims; j++) {
+                    means[j] /= embeddings.length;
+                }
+                
+                // Calculate standard deviations
+                for (let i = 0; i < embeddings.length; i++) {
+                    for (let j = 0; j < dims; j++) {
+                        stds[j] += Math.pow(embeddings[i][j] - means[j], 2);
+                    }
+                }
+                for (let j = 0; j < dims; j++) {
+                    stds[j] = Math.sqrt(stds[j] / embeddings.length);
+                }
+                
+                // Normalize the embeddings
+                const normalized = embeddings.map(embedding => {
+                    return embedding.map((val, j) => {
+                        return (val - means[j]) / (stds[j] + 1e-8);  // Add small epsilon to avoid division by zero
+                    });
+                });
+                
+                return normalized;
+            }
+            
+            // Start the animation
+            animate();
+        }
+    </script>
+</body>
+</html> 

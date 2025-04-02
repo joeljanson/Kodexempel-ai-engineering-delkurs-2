@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talk to HuggingFace Models</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 30px;
+      }
+      button {
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin: 10px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      #status {
+        margin-top: 20px;
+        font-style: italic;
+      }
+      #recordButton {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Talk to HuggingFace Models</h1>
+    <button id="loadTTSButton">Load Text to Speech Model</button>
+    <button id="recordButton">Press to Record</button>
+    <div id="status"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html> 

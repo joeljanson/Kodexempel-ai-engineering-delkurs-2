@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@huggingface/inference": "^3.6.2",
+    "dotenv": "^16.4.7"
+  }
+}

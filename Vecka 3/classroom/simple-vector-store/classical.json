@@ -1,0 +1,74 @@
+{
+	"pieces": [
+		{
+			"title": "The Planets by Gustav Holst",
+			"description": "Explore the universe through Holst's orchestral suite, capturing the astrological character of each planet in our solar system.",
+			"duration": "51 min"
+		},
+		{
+			"title": "The Rite of Spring by Igor Stravinsky",
+			"description": "Delve into the controversial 1913 premiere that sparked riots and reshaped modern music and ballet forever.",
+			"duration": "35 min"
+		},
+		{
+			"title": "Symphony No. 9 'Choral' by Ludwig van Beethoven",
+			"description": "Discover the revolutionary symphony whose final movement's 'Ode to Joy' became a universal anthem for humanity.",
+			"duration": "1 hr 10 min"
+		},
+		{
+			"title": "Turangalîla-Symphonie by Olivier Messiaen",
+			"description": "Experience Messiaen's vibrant and ecstatic exploration of love, joy, and exotic soundscapes inspired by mythology and spirituality.",
+			"duration": "1 hr 20 min"
+		},
+		{
+			"title": "Appalachian Spring by Aaron Copland",
+			"description": "Journey into the heart of American optimism and pioneering spirit depicted vividly through Copland's ballet music.",
+			"duration": "40 min"
+		},
+		{
+			"title": "Symphonie Fantastique by Hector Berlioz",
+			"description": "Immerse yourself in a groundbreaking narrative symphony portraying obsessive love, dreams, and dramatic visions.",
+			"duration": "55 min"
+		},
+		{
+			"title": "La Mer by Claude Debussy",
+			"description": "Sail away on an impressionistic musical voyage capturing the mysterious beauty and changing moods of the ocean.",
+			"duration": "24 min"
+		},
+		{
+			"title": "Music for 18 Musicians by Steve Reich",
+			"description": "Dive into Reich's hypnotic, rhythmic masterpiece that explores human perception, repetition, and minimalist patterns.",
+			"duration": "56 min"
+		},
+		{
+			"title": "1812 Overture by Pyotr Ilyich Tchaikovsky",
+			"description": "Witness history in music as Tchaikovsky vividly commemorates Russia's victory over Napoleon's invading army.",
+			"duration": "16 min"
+		},
+		{
+			"title": "The Four Seasons by Antonio Vivaldi",
+			"description": "Travel through the seasons with this iconic violin concerto series, painting a vivid picture of nature's ever-changing beauty.",
+			"duration": "42 min"
+		},
+		{
+			"title": "Carmina Burana by Carl Orff",
+			"description": "Step into the medieval world of poetry, fate, and fortune brought to life through Orff's powerful choral and orchestral setting.",
+			"duration": "1 hr"
+		},
+		{
+			"title": "Pictures at an Exhibition by Modest Mussorgsky",
+			"description": "Stroll through Mussorgsky's vivid musical gallery inspired by paintings, capturing the spirit and imagery of Russian art.",
+			"duration": "33 min"
+		},
+		{
+			"title": "Boléro by Maurice Ravel",
+			"description": "Experience the hypnotic build-up of this iconic piece that reflects the captivating and mesmerizing rhythm of dance and movement.",
+			"duration": "17 min"
+		},
+		{
+			"title": "Peer Gynt Suite by Edvard Grieg",
+			"description": "Embark on a journey through Norwegian folklore with Grieg's dramatic and picturesque musical storytelling.",
+			"duration": "30 min"
+		}
+	]
+}

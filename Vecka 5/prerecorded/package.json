@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@huggingface/inference": "^3.8.0",
+    "@huggingface/transformers": "^3.4.2",
+    "@supabase/supabase-js": "^2.49.4",
+    "dotenv": "^16.5.0",
+    "pdf-parse": "^1.1.1"
+  }
+}

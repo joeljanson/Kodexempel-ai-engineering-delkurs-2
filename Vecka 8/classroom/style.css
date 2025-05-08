@@ -1,0 +1,90 @@
+/* Style the input field */
+#new-task {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+/* Style the add button */
+#add-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#add-button:hover {
+  background-color: #3e8e41;
+}
+
+/* Style the list container */
+#incomplete-tasks, #completed-tasks {
+  margin-top: 20px;
+}
+
+/* Style the list items */
+li {
+  list-style: none;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+li > input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+li > label {
+  font-size: 16px;
+}
+
+li .edit {
+  display: none;
+}
+
+li.editing .edit {
+  display: inline-block;
+  width: 60%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+li.editing label {
+  display: none;
+}
+
+li > button.delete {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
+}
+
+li > button.editButton {
+  background-color: #008CBA;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right;
+  margin-right: 5px;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  #new-task {
+    width: 60%;
+  }
+  li > .edit {
+    width: 50%;
+  }
+}

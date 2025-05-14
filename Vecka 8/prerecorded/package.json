@@ -3,6 +3,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@huggingface/inference": "^3.12.1",
+    "@tavily/core": "^0.5.2",
     "dotenv": "^16.5.0",
     "duck-duck-scrape": "^2.2.7",
     "html-to-text": "^9.0.5",

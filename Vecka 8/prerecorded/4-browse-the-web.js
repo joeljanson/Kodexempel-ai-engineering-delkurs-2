@@ -1,7 +1,9 @@
 import { OpenAI } from "openai";
-import DDG from "duck-duck-scrape";
 import { convert } from "html-to-text";
 import dotenv from "dotenv";
+
+// To install: npm i @tavily/core
+import { tavily } from "@tavily/core";
 
 dotenv.config();
 
@@ -9,12 +11,14 @@ const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 
+const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
+
 const DEFAULT_SYSTEM_PROMPT = `
 Instructions:
 Todays date is ${new Date().toLocaleDateString()}.
 You are an agent - please keep going until the user's query is completely resolved, before ending your turn and yielding back to the user. Only terminate your turn when you are sure that the problem is solved, or if you need more info from the user to solve the problem.
 
-If you are not sure about anything pertaining to the user's request, use your tools to read files, browse the web and gather the relevant information: do NOT guess or make up an answer.
+If you are not sure about anything pertaining to the user's request, use your tools to read files, browse the web and visit websites and gather the relevant information: do NOT guess or make up an answer.
 
 So always ask for more information if needed or if you are not sure about what to send in as an argument to a function.
 
@@ -39,8 +43,7 @@ async function generateResponse(prompt) {
 		//console.log("Assistant response:", JSON.stringify(response, null, 2));
 
 		for (const message of response.output) {
-			
-            messages.push(message);
+			messages.push(message);
 
 			if (message.type === "function_call") {
 				const name = message.name;
@@ -68,8 +71,9 @@ async function generateResponse(prompt) {
 
 async function browseWeb(args) {
 	console.log("Browsing web:", args);
-	const searchResults = await DDG.search(args.search_query, {
-		safeSearch: DDG.SafeSearchType.STRICT,
+	const searchResults = await client.search((args.search_query), {
+		timeRange: "month",
+		includeAnswer: "basic",
 	});
 	console.log("Search results:", searchResults);
 	return searchResults.results.slice(0, 3);
@@ -109,7 +113,6 @@ function callFunction(name, args) {
 // Tool definitions
 //--------------------------------
 
-
 const tools = [
 	{
 		type: "function",
@@ -146,11 +149,13 @@ const tools = [
 ];
 
 async function main() {
-	const response = await generateResponse("What is the weather in Stockholm today?");
+	const response = await generateResponse(
+		"Hwo do I use the Tone.Transport properly? Please search the web for an answer."
+	);
 	/* const response = await generateResponse(
 		"Could you explain the infinity series based on this blog post? https://www.lawtonhall.com/blog/2019/9/9/per-nrgrds-infinity-series"
 	); */
-	console.log("Response:", response.output_text);
+	console.log("Response:", response);
 }
 
 main();

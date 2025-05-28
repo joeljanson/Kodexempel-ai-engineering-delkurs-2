@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-async function main() {
+async function main(prompt) {
 	const ai = new GoogleGenAI({
 		apiKey: process.env.GEMINI_API_KEY,
 	});
@@ -38,10 +38,8 @@ async function main() {
 		responseMimeType: "text/plain",
 		systemInstruction: [
 			{
-				text: `You are a helpful assistant.`,
-				//Vad ska vi ha för systeminstruktion för att modellen ska förstå?
-				//Och vad händer om användaren frågar om någonting annat än vädret?
-				//Hur behöver vi instruera modellen att svara på frågor om endast vädret?
+				text: `You are a helpful assistant. Here are memories: ${getMemory()}`,
+				//Vad behöver vi ha för systeminstruktion för att modellen ska förstå att den ska lägga till minnen i minnesbanken?
 			},
 		],
 	};
@@ -51,7 +49,7 @@ async function main() {
 			role: "user",
 			parts: [
 				{
-					text: `My name is Joel!`,
+					text: prompt,
 				},
 			],
 		},
@@ -115,7 +113,9 @@ async function main() {
 	}
 }
 
-main();
+main("What is the weather in Stockholm?");
+main("My name is Joel!");
+main("What is my name?");
 
 // ------------------------------------------------------------------------------------------------
 // Definitions for the functions

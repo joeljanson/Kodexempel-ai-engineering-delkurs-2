@@ -71,14 +71,14 @@ async function buildWebsite(prompt) {
 		},
 	];
 
-	const response = await ai.models.generateContentStream({
+	const response = await ai.models.generateContent({
 		model,
 		config,
 		contents,
 	});
-	for await (const chunk of response) {
+	/* for await (const chunk of response) {
 		console.log(chunk.text);
-	}
+	} */
 }
 
 buildWebsite("Could you build a note taking app for me?");

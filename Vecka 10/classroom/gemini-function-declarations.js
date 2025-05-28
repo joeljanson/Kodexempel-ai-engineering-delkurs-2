@@ -1,5 +1,4 @@
 import { Type } from "@google/genai";
-import { Agent } from "./gemini-agent.js";
 
 export const addToMemorySchema = {
 	name: "addToMemory",

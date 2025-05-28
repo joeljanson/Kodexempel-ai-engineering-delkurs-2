@@ -1,6 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
-import { addToMemory, getMemory, callFrenchAgent } from "./gemini-function-declarations.js";
+import { addToMemorySchema, getMemorySchema } from "./gemini-function-declarations.js";
 
 dotenv.config();
 

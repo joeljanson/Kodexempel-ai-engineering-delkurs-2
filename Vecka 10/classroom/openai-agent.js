@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import { addToMemory, getMemory, callFrenchAgent } from "./functions.js";
+import { addToMemory, getMemory, callFrenchAgent, callEnglishAgent, callFrenchExpert } from "./functions.js";
 
 dotenv.config();
 
@@ -10,12 +10,14 @@ export class OpenAIAgent {
 		model = "gpt-4.1-nano",
 		tools = [],
 		apiKey = process.env.OPENAI_API_KEY,
+        maxIterations = 5
 	}) {
 		this.openai = new OpenAI({ apiKey });
 		this.model = model;
 		this.history = [];
 		this.systemInstructions = systemInstructions;
 		this.tools = tools;
+        this.maxIterations = maxIterations;
 	}
 
 	async chat(message) {
@@ -30,7 +32,7 @@ export class OpenAIAgent {
 
 	async _runFullTurn() {
 		let iterations = 0;
-		const maxIterations = 5;
+		const maxIterations = this.maxIterations;
 
 		while (iterations < maxIterations) {
 			iterations++;
@@ -80,8 +82,17 @@ export class OpenAIAgent {
 					result = getMemory();
 					console.log("Called get memory:", result);
 				} else if (name === "callFrenchAgent") {
+                    console.log("Called call french agent:", parsedArgs.message);
 					result = await callFrenchAgent(parsedArgs.message);
-					console.log("Called call french agent:", result);
+					//console.log("Called call french agent:", result);
+				} else if (name === "callEnglishAgent") {
+                    console.log("Call begin english agent:", parsedArgs.message);
+					result = await callEnglishAgent(parsedArgs.message);
+					console.log("English agent response:", result);
+				} else if (name === "callFrenchExpert") {
+                    console.log("Called call french expert:", parsedArgs.message);
+					result = await callFrenchExpert(parsedArgs.message);
+					//console.log("Called call french expert:", result);
 				} else {
 					console.warn(`⚠️  Unknown tool call: ${name}`);
 					result = `Error: no handler for ${name}`;
